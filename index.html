@@ -2,7 +2,7 @@
 <html lang="en-us">
   <head>
     <meta charset="UTF-8">
-    <title>Layout by nealsmart</title>
+    <title>Flow Map Generation for Counter-Strike by nealsmart</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
@@ -11,7 +11,7 @@
   </head>
   <body>
     <section class="page-header">
-      <h1 class="project-name">Layout</h1>
+      <h1 class="project-name">Flow Map Generation for Counter-Strike</h1>
       <h2 class="project-tagline"></h2>
       <a href="https://github.com/nealsmart/layout" class="btn">View on GitHub</a>
       <a href="https://github.com/nealsmart/layout/zipball/master" class="btn">Download .zip</a>
@@ -19,16 +19,15 @@
     </section>
 
     <section class="main-content">
-      <h1>
-<a id="flow-map-layout-generation-for-counter-strike" class="anchor" href="#flow-map-layout-generation-for-counter-strike" aria-hidden="true"><span class="octicon octicon-link"></span></a>Flow Map Layout Generation for Counter-Strike</h1>
+      <p><img src="https://i.imgur.com/u1BYlbZ.jpg" alt="Cache"></p>
 
 <h3>
-<a id="introduction" class="anchor" href="#introduction" aria-hidden="true"><span class="octicon octicon-link"></span></a>Introduction</h3>
+<a id="what-is-the-purpose-of-this-project" class="anchor" href="#what-is-the-purpose-of-this-project" aria-hidden="true"><span class="octicon octicon-link"></span></a>What is the purpose of this project?</h3>
 
 <p>Ideal map layout depends greatly on the gameplay logic of each game, meaning that each game requires a unique approach to development of levels. Creation of these levels is a time consuming process, one which isn't guaranteed to end with an ideal map. The purpose of this project is to initially aid in the development of levels by providing a good flow map to base the map on, then eventually be able to generate entire levels from scratch.</p>
 
 <h3>
-<a id="problem" class="anchor" href="#problem" aria-hidden="true"><span class="octicon octicon-link"></span></a>Problem</h3>
+<a id="solving-the-problem" class="anchor" href="#solving-the-problem" aria-hidden="true"><span class="octicon octicon-link"></span></a>Solving the problem</h3>
 
 <p>The system is, in essence, a combinatoric problem solver. By representing a level as a node graph, the system can generate and then analyze the performance of the map according to the many aspects of level design theory for Counter-Strike.</p>
 
@@ -37,23 +36,16 @@
 <p><img src="http://i.imgur.com/uNcr0Qu.png" alt="alt"></p>
 
 <h3>
-<a id="significance" class="anchor" href="#significance" aria-hidden="true"><span class="octicon octicon-link"></span></a>Significance</h3>
+<a id="what-significance-does-this-have-to-the-counter-strike-community" class="anchor" href="#what-significance-does-this-have-to-the-counter-strike-community" aria-hidden="true"><span class="octicon octicon-link"></span></a>What significance does this have to the Counter-Strike community?</h3>
 
 <p>The community of Counter-Strike is growing every day, peaking at over 600,000 concurrent players within the past week. The current map pool only consists of seven competitive maps and eight secondary maps. Twice a year, seven new maps by community members are temporarily added as a third pool of maps to choose from.</p>
 
 <p>For frequent players, the map pool can get quite repetitive. By providing a solid framework to design a map around, and eventually a complete graybox map, players hungry for new gameplay experiences can play upon these, and designers can adopt these levels to fine-tune with playtesting and artpass them for release.</p>
 
 <h3>
-<a id="project-details" class="anchor" href="#project-details" aria-hidden="true"><span class="octicon octicon-link"></span></a>Project Details</h3>
+<a id="methods" class="anchor" href="#methods" aria-hidden="true"><span class="octicon octicon-link"></span></a>Methods</h3>
 
-<pre><code>+The code accepts a list of indegrees to build a random graph. Each edge is given a random weight.
-+Two nodes on opposite ends of the graph are chosen as spawn points for each team.
-+Which team reaches what node first and at what time is calculated.
-+Useless routes are pruned from the graph.
-+Two bombsites within as reasonable distance as possible are chosen within the nodes CT reaches first.
-+Based on these bombsites, the edges and nodes that are ideal to set up defense are determined.
-+Soon: A basic game simulator to predict win rates for either team.
-</code></pre>
+<p>To test the map, a basic simulator was constructed. Two teams of five players each, imitating the game, are placed in the map. One team will seek to move to a bombsite. The other team will secure the holding routes, then move to the bombsite the enemy team is moving to.</p>
 
 <h3>
 <a id="using-the-system" class="anchor" href="#using-the-system" aria-hidden="true"><span class="octicon octicon-link"></span></a>Using the System</h3>
@@ -63,7 +55,7 @@
 <p><img src="http://i.imgur.com/mYqWi78.png" alt="alt"></p>
 
       <footer class="site-footer">
-        <span class="site-footer-owner"><a href="https://github.com/nealsmart/layout">Layout</a> is maintained by <a href="https://github.com/nealsmart">nealsmart</a>.</span>
+        <span class="site-footer-owner"><a href="https://github.com/nealsmart/layout">Flow Map Generation for Counter-Strike</a> is maintained by <a href="https://github.com/nealsmart">nealsmart</a>.</span>
 
         <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
       </footer>
