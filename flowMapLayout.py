@@ -13,9 +13,11 @@ inferno = [1, 2, 4, 2, 3, 2, 3, 2, 2, 3, 3, 2, 3, 3, 3, 3, 3, 2, 3, 3, 3, 4, 4, 
 maxlen = 5
 G = []
 
+#waiting function for demo
 def wait():
 	input("Press Enter to continue...")
-	
+
+#demo function, display image at each stage	
 def step(input):
 	info = {}
 	G = newGraph(input)
@@ -33,6 +35,9 @@ def step(input):
 	getAreaControl(G, info)
 	drawGraph(G, info, 'jraf')
 	wait()
+	pruneNodes(G, info)
+	drawGraph(G, info, 'jraf')
+	wait()
 	getBombsites(G, info)
 	drawGraph(G, info, 'jraf')
 	wait()
@@ -40,23 +45,28 @@ def step(input):
 	drawGraph(G, info, 'jraf')	
 	wait()
 
+#make graph based on input indegree array
 def makeGraph(input):
-	G = nx.random_degree_sequence_graph(input)
 	info = {}
+	G = newGraph(input)
 	randWeight(G)
 	info['tspawn'] = getTSpawn(G)
 	info['ctspawn'] = getCTSpawn(G,info)
 	getAreaControl(G, info)
+	pruneNodes(G, info)
 	getBombsites(G, info)
 	getHoldPaths(G, info)	
 	drawGraph(G, info, 'jraf')
+	return G, info
 
+#generate random graphs until we get a planar one
 def newGraph(input):
 	for x in range(20):
 		G = nx.random_degree_sequence_graph(input)
 		if nx.is_connected(G) and is_planar(G):
 			return G
 	return -1
+
 def is_planar(G):
     """
     function checks if graph G has K(5) or K(3,3) as minors,
@@ -80,11 +90,13 @@ def is_planar(G):
                 result=False
                 bad_minor=subnodes
     return result #add ,bad_minor if want the offending subnodes (for deletion?)
-	
+
+#give each edge a weight between 1 and maxlen	
 def randWeight(graph):	
 	for edge in graph.edges():
 		graph[edge[0]][edge[1]]['weight'] = rand.randint(1,maxlen)
-		
+
+#prune excess routes		
 def pruneNodes(graph, info):
 	templist = sorted(info['nodes'], key=lambda k: k['time'], reverse=True)
 	tempnodes = sorted(info['nodes'], key=lambda k: k['index'])
@@ -117,13 +129,15 @@ def randWeightOld(graph):
 		edge.attr['weight'] = temp
 		#edge.attr['label'] = temp
 		edge.attr['len'] = math.ceil(temp/4.0)
-		
+
+#make Tspawn node with indegree 1		
 def getTSpawn(graph): #choose a node with indegree of 1
 	for node in range(len(graph.nodes())):
 		if graph.degree(node) == 1:
 			return node
 	return -1
 
+#find node furthest from tspawn, make it ctspawn
 def getCTSpawn(graph, info): #find point on 'other end' of graph
 	paths = nx.single_source_dijkstra(graph, info['tspawn'])
 	max = 0
@@ -138,7 +152,8 @@ def getCTSpawn(graph, info): #find point on 'other end' of graph
 	#tree = nx.bfs_tree(graph, tspawn)
 	#nodes = nx.topological_sort(tree)
 	#return nodes[len(nodes)-1]
-	
+
+#figure who gets to which node first	
 def getAreaControl(graph, info):
 	ct = info['ctspawn']
 	t = info['tspawn']
@@ -152,13 +167,21 @@ def getAreaControl(graph, info):
 		if(tlen < ctlen):
 			info['nodes'].append({'team': 't', 'time': tlen, 'index': node})
 			info['t'].append(node)
+			graph.node[node]['team'] = 't'
+			graph.node[node]['time'] = tlen
 		elif(ctlen < tlen):
 			info['nodes'].append({'team': 'ct', 'time': ctlen, 'index': node})
 			info['ct'].append(node)
+			graph.node[node]['team'] = 'ct'
+			graph.node[node]['time'] = tlen			
 		else:
 			info['nodes'].append({'team': 'n', 'time': tlen, 'index': node})
 			info['n'].append(node)
-			
+			graph.node[node]['team'] = 'n'
+			graph.node[node]['time'] = tlen			
+
+#Find subgraph of ct controlled area that contains both bombsites and has least outgoing connections
+#Pretty sure this is an n! algorithm			
 def getHoldPaths(graph, info): #subgraph with bombsites within CT area with least amount of outgoing
 	sites = (info['a'], info['b'])
 	base = tuple(x for x in info['ct'] if x not in sites)
@@ -166,6 +189,7 @@ def getHoldPaths(graph, info): #subgraph with bombsites within CT area with leas
 	info['holdcount'] = min
 	info['holdpaths'] = []
 	info['holdarea'] = []
+	info['holdnodes'] = []
 	for count in range(len(base)):
 		combo = list(it.combinations(base, len(base)-count))
 		for nodes in combo:			
@@ -175,8 +199,16 @@ def getHoldPaths(graph, info): #subgraph with bombsites within CT area with leas
 				min = len(bound)
 				info['holdcount'] = min
 				info['holdpaths'] = bound
-				info['holdarea'] = sites+nodes			
-	
+				info['holdarea'] = sites+nodes
+	for paths in info['holdpaths']:
+		if graph.node[paths[0]]['team'] == 'ct':
+			info['holdnodes'].append(paths[0])
+			graph.node[paths[0]]['hold'] = True
+		else:
+			info['holdnodes'].append(paths[1])
+			graph.node[paths[1]]['hold'] = True
+
+#find two bombsites that have two 10-13 second routes inbetween within the ct area
 def getBombsites(graph, info):
 	info['rotate'] = 0
 	info['route1'] = []
@@ -201,11 +233,12 @@ def getBombsites(graph, info):
 						return #we found at least two, return
 				except:
 					pass
-
+#graph coloring
 def colorRoute(graph, route):
 	for i in range(len(route)-1):
 		graph[route[i]][route[i+1]]['color']='#866DA6'
-		
+
+#graph coloring		
 def colorHold(graph, info):
 	#try:
 	for edge in info['holdpaths']:
@@ -233,7 +266,7 @@ def defaultGraph(graph):
 	for edge in graph.edges():
 		edge.attr['dir'] = 'none'
 		edge.attr['penwidth'] = 1.5
-		
+#process graph for generating image		
 def drawGraph(graph, info, file):
 	try:		
 		colorRoute(graph, info['route1'])
